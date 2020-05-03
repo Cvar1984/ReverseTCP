@@ -1,7 +1,6 @@
-CXXFLAGS =-Wall -Wextra -Werror -s -I.
-SOURCES ?=src
-
-main: $(SOURCES)/Shelter.cpp
+CXXFLAGS =-Wall -Wextra -Werror -s -I./include
+FILES = main
+main: $(FILES).cpp
 
 clean:
-	rm -f main
+	rm -f $(FILES)

