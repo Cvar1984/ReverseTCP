@@ -1,9 +1,10 @@
 #include <shelter.hpp>
 #include <argh.h>
 #include <string>
-#include <boost/lexical_cast.hpp>
+#include <cstdlib>
 
 using std::string;
+using std::strtoul;
 using namespace argh;
 
 int main(int argc, char* argv[])
@@ -30,7 +31,8 @@ int main(int argc, char* argv[])
             if(param.first == "h") host = param.second;
             else if(param.first == "s") shell = param.second;
             else if(param.first == "p") {
-                port = boost::lexical_cast<unsigned short>(param.second);
+                unsigned short port;
+                port = (unsigned short) strtoul(param.second.c_str(), NULL, 0);
             }
         }
         app.reverse(host, port, shell);
